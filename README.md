@@ -7,7 +7,7 @@ A Better Map for Wurm Unlimited - Server
   - extract bettermapserver-x.x.zip into Wurm Unlimited Server directory
 
 - **BetterMapServer Features**
-  - Creates a serverpack to be sent to client for use with BetterMap
+  - Creates a serverpack to be sent to client for use with BetterMap client mod
   - Has three settings in config file that control what information is sent to the clients:
 
     | Setting | Default |
