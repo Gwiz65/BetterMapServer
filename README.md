@@ -10,10 +10,10 @@ A Better Map for Wurm Unlimited - Server
   - Creates a serverpack to be sent to client for use with BetterMap.
   - Has three settings in config file that control what information is sent to the clients:
 
-| Setting | Default |
-| :--- | :--- |
-| allowDeeds | true |
-| allowStartTowns | true |
-| allowSoulfallStones| true |
+    | Setting | Default |
+    | :--- | :--- |
+    | allowDeeds | true |
+    | allowStartTowns | true |
+    | allowSoulfallStones| true |
 
 Default settings are set to "true" which allows to info to be sent to client. 
