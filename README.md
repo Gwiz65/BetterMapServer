@@ -6,10 +6,10 @@ A Better Map for Wurm Unlimited - Server
   - needs Ago's ServerPack and HttpServer installed
   - extract bettermapserver-x.x.zip into Wurm Unlimited Server directory
 
-- **BetterMapServer features**
+- **BetterMapServer Features**
   - needs Ago's Server Modlauncher installed
-  - Creates a serverpack to be sent to client for use with BetterMap.
-  - Has three settings in config file that control what information is sent to the clients:
+  - Creates a serverpack to be sent to client for use with BetterMap
+  - - Has three settings in config file that control what information is sent to the clients:
 
     | Setting | Default |
     | :--- | :--- |
