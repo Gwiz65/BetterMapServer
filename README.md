@@ -6,16 +6,14 @@ A Better Map for Wurm Unlimited - Server
 
 - extract bettermapserver-x.x.zip into Wurm Unlimited Server directory
 
-- BetterMapServer features:
+- **BetterMapServer features:**
   - Creates a serverpack to be sent to client for use with BetterMap.
   - Has three settings in config file that control what information is sent to the clients:
 
-| Command | Default |
+| Setting | Default |
 | :--- | :--- |
 | allowDeeds | true |
-| allowStartTowns | allowSoulfallStones |
-| allowSoulfallStones| allowSoulfallStones |
-| s2c set-margin |allowSoulfallStones |
+| allowStartTowns | true |
+| allowSoulfallStones| true |
 
-    
 Default settings are set to "true" which allows to info to be sent to client. 
