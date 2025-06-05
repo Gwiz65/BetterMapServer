@@ -2,9 +2,9 @@
 A Better Map for Wurm Unlimited - Server
 
 - **Installation**
-- needs Ago's Server Modlauncher installed
-- needs Ago's ServerPack and HttpServer installed
-- extract bettermapserver-x.x.zip into Wurm Unlimited Server directory
+  - needs Ago's Server Modlauncher installed
+  - needs Ago's ServerPack and HttpServer installed
+  - extract bettermapserver-x.x.zip into Wurm Unlimited Server directory
 
 - **BetterMapServer features**
   - Creates a serverpack to be sent to client for use with BetterMap.
