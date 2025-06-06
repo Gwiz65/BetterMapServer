@@ -5,6 +5,13 @@ A Better Map for Wurm Unlimited - Server
   - needs Ago's Server Modlauncher installed
   - needs Ago's ServerPack and HttpServer mods installed
   - extract bettermapserver-x.x.zip into Wurm Unlimited Server directory
+ 
+ - **Map Name**
+   - The map name is set in the table "SERVERS" in wurmlogin.db.
+
+    `update "SERVERS" set "MAPNAME" = 'MyCoolMap' where local = 1`
+
+   - Note: "MAPNAME" is the map name sent to the client, "NAME" is the name as seen in the "Server Name" field of the "Local Server" settings
 
 - **BetterMapServer Features**
   - Creates a serverpack to be sent to client for use with BetterMap client mod
