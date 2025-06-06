@@ -14,7 +14,7 @@ A Better Map for Wurm Unlimited - Server
    - Note: "MAPNAME" is the map name sent to the client, "NAME" is the name as seen in the "Server Name" field of the "Local Server" settings
 
 - **BetterMapServer Features**
-  - Creates a serverpack to be sent to client for use with BetterMap client mod
+  - Creates a serverpack to be sent to client for use with [BetterMap client mod](https://github.com/Gwiz65/BetterMap/releases/latest)
   - Has three settings in config file that control what information is sent to the clients:
 
     | Setting | Default |
