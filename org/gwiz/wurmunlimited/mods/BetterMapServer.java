@@ -58,7 +58,7 @@ import com.wurmonline.server.Servers;
 
 public class BetterMapServer implements WurmServerMod, ServerStartedListener, Configurable, Versioned {
 
-	private static final String version = "1.0";
+	private static final String version = "1.1";
 	private boolean allowDeeds = true;
 	private boolean allowStartTowns = true;
 	private boolean allowSoulfallStones = true;
