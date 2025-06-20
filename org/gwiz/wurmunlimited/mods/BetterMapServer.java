@@ -113,7 +113,6 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 				int ypos = ((rs.getInt("STARTY") + rs.getInt("ENDY")) / 2);
 				boolean isStartTown = rs.getBoolean("PERMANENT");
 				boolean isDisbanded = rs.getBoolean("DISBAND");
-				// System.out.println("isDisbanded = " + isDisbanded);
 				if ((isStartTown && allowStartTowns && !isDisbanded) || (!isStartTown && allowDeeds && !isDisbanded)) {
 					outtext = outtext + "<" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
 					outtext = outtext + "<name>" + name + "</name>";
