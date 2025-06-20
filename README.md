@@ -22,3 +22,7 @@ A Better Map for Wurm Unlimited - Server
     | allowDeeds | true |
     | allowStartTowns | true |
     | allowSoulfallStones| true |
+
+- **Release Notes:**
+  - Release 1.0 - Initial release.
+  - Release 1.1 - Excluded disbanded deeds
