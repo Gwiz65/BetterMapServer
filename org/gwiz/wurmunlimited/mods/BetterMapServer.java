@@ -5,7 +5,7 @@
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -13,7 +13,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -21,7 +21,7 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * For more information, please refer to <http://unlicense.org/>
 */
 
@@ -36,8 +36,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -45,7 +53,6 @@ import javax.imageio.ImageIO;
 
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
-import org.gotti.wurmunlimited.modloader.interfaces.Versioned;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.mods.serverpacks.api.ServerPacks;
 import org.gotti.wurmunlimited.mods.serverpacks.api.ServerPacks.ServerPackOptions;
@@ -56,22 +63,56 @@ import com.wurmonline.server.DbConnector;
 import com.wurmonline.server.Server;
 import com.wurmonline.server.Servers;
 
-public class BetterMapServer implements WurmServerMod, ServerStartedListener, Configurable, Versioned {
+public class BetterMapServer implements WurmServerMod, ServerStartedListener, Configurable {
 
-	private static final String version = "1.1";
-	private boolean allowDeeds = true;
-	private boolean allowStartTowns = true;
-	private boolean allowSoulfallStones = true;
+	private static final String version = "1.2";
+	private static Logger logger = Logger.getLogger(BetterMapServer.class.getName());
+	private boolean allowDeeds;
+	private boolean allowStartTowns;
+	private boolean allowSoulfallStones;
+	private boolean scheduleMapUpdates;
+	private LocalTime updateTime;
+	private int updatePeriod;
 
 	@Override
 	public void configure(Properties properties) {
 		allowDeeds = Boolean.parseBoolean(properties.getProperty("allowDeeds", "true"));
 		allowStartTowns = Boolean.parseBoolean(properties.getProperty("allowStartTowns", "true"));
 		allowSoulfallStones = Boolean.parseBoolean(properties.getProperty("allowSoulfallStones", "true"));
+		scheduleMapUpdates = Boolean.parseBoolean(properties.getProperty("scheduleMapUpdates", "true"));
+		updateTime = LocalTime.parse(properties.getProperty("updateTime", "00:00"));
+		updatePeriod = Integer.parseInt(properties.getProperty("updatePeriod", "1"));
+		if (updatePeriod < 1) {
+			updatePeriod = 1;
+		}
 	}
 
 	@Override
 	public void onServerStarted() {
+		createServerPack();
+		if (scheduleMapUpdates) {
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime firstExecution = now.with(updateTime);
+			if (now.compareTo(firstExecution) > 0) {
+				firstExecution = firstExecution.plusDays(1);
+			}
+			long initialDelay = Duration.between(now, firstExecution).getSeconds();
+			long period = TimeUnit.DAYS.toSeconds(updatePeriod);
+			scheduler.scheduleAtFixedRate(() -> createServerPack(), initialDelay, period, TimeUnit.SECONDS);
+			logger.log(Level.INFO, "Map update scheduler started.");
+			String daytext;
+			if (updatePeriod == 1) {
+				daytext = "everyday";
+			} else {
+				daytext = "every " + updatePeriod + " days";
+			}
+			logger.log(Level.INFO,
+					"First scheduled map update at " + firstExecution + " and " + daytext + " thereafter.");
+		}
+	}
+
+	private void createServerPack() {
 		byte[] data = null;
 		String mapname = Servers.localServer.mapname.toLowerCase(Locale.ROOT).replace(" ", "_");
 		String mapping = "bettermap_" + mapname + ".map = map/bettermap_" + mapname + ".png\nbettermap_" + mapname
@@ -105,23 +146,23 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 			PreparedStatement ps = null;
 			ResultSet rs = null;
 			dbcon = DbConnector.getZonesDbCon();
-			ps = dbcon.prepareStatement("Select * from VILLAGES");
+			ps = dbcon.prepareStatement("Select * from VILLAGES WHERE DISBAND=0");
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				String name = rs.getString("NAME");
 				int xpos = ((rs.getInt("STARTX") + rs.getInt("ENDX")) / 2);
 				int ypos = ((rs.getInt("STARTY") + rs.getInt("ENDY")) / 2);
 				boolean isStartTown = rs.getBoolean("PERMANENT");
-				boolean isDisbanded = rs.getBoolean("DISBAND");
-				if ((isStartTown && allowStartTowns && !isDisbanded) || (!isStartTown && allowDeeds && !isDisbanded)) {
+				if ((isStartTown && allowStartTowns) || (!isStartTown && allowDeeds)) {
 					outtext = outtext + "<" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
 					outtext = outtext + "<name>" + name + "</name>";
 					outtext = outtext + "<xpos>" + xpos + "</xpos>";
 					outtext = outtext + "<ypos>" + ypos + "</ypos>";
-					if (isStartTown)
+					if (isStartTown) {
 						outtext = outtext + "<type>1</type>";
-					else
+					} else {
 						outtext = outtext + "<type>0</type>";
+					}
 					outtext = outtext + "</" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
 				}
 			}
@@ -138,8 +179,8 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 				rs = ps.executeQuery();
 				while (rs.next()) {
 					String name = rs.getString("DESCRIPTION");
-					int xpos = (int) Math.round(rs.getFloat("POSX") / 4.0F);
-					int ypos = (int) Math.round(rs.getFloat("POSY") / 4.0F);
+					int xpos = Math.round(rs.getFloat("POSX") / 4.0F);
+					int ypos = Math.round(rs.getFloat("POSY") / 4.0F);
 					outtext = outtext + "<" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
 					outtext = outtext + "<name>" + name + "</name>";
 					outtext = outtext + "<xpos>" + xpos + "</xpos>";
@@ -170,16 +211,18 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 				int color = shade(tile.getColor().getRGB(), h3 - h1, h1 <= 0);
 				int start = (int) (y - (h1 / 50));
 				int end = (int) (start + (Math.abs(h2 - h1) / 50) + 2);
-				if (end >= size)
+				if (end >= size) {
 					end = size - 1;
-				if (start < 0)
+				}
+				if (start < 0) {
 					start = 0;
+				}
 				for (int i = start; i <= end; i++) {
 					pixels[i * size + x] = color;
 				}
 			}
 		}
-		BufferedImage img2 = new BufferedImage(4096, 4096, BufferedImage.TYPE_INT_RGB);
+		BufferedImage img2 = new BufferedImage(4096, 4096, BufferedImage.TYPE_INT_ARGB);
 		img2.createGraphics().drawImage(img, 0, 0, 4096, 4096, null);
 		return img2;
 	}
@@ -197,18 +240,24 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 			g = (r / 5) + 51;
 			b = (r / 5) + 102;
 		}
-		if (r < 0)
+		if (r < 0) {
 			r = 0;
-		if (g < 0)
+		}
+		if (g < 0) {
 			g = 0;
-		if (b < 0)
+		}
+		if (b < 0) {
 			b = 0;
-		if (r > 255)
+		}
+		if (r > 255) {
 			r = 255;
-		if (g > 255)
+		}
+		if (g > 255) {
 			g = 255;
-		if (b > 255)
+		}
+		if (b > 255) {
 			b = 255;
+		}
 		return 0xFF000000 | (r << 16) | (g << 8) | b;
 	}
 
