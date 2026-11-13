@@ -15,7 +15,7 @@ A Better Map for Wurm Unlimited - Server
 
 - **BetterMapServer Features**
   - Creates a serverpack to be sent to client for use with [BetterMap client mod](https://github.com/Gwiz65/BetterMap/releases/latest)
-  - Optional serverpack update scheduler. Time of day and number of days between updates can be set in the properties file. Default settings are everyday at midnight (local time). Updated map will be sent to the clients on their next login.
+  - Optional serverpack update scheduler. Time of day and number of days between updates can be set in the properties file. Default settings are everyday at midnight (local time). Updated map will be sent to the clients on next login.
   - Has three settings in properties file that control what information is sent to the clients:
 
     | Setting | Default |
