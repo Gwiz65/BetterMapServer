@@ -15,14 +15,17 @@ A Better Map for Wurm Unlimited - Server
 
 - **BetterMapServer Features**
   - Creates a serverpack to be sent to client for use with [BetterMap client mod](https://github.com/Gwiz65/BetterMap/releases/latest)
-  - Has three settings in config file that control what information is sent to the clients:
+  - Has three settings in properties file that control what information is sent to the clients:
 
     | Setting | Default |
     | :--- | :--- |
     | allowDeeds | true |
     | allowStartTowns | true |
     | allowSoulfallStones| true |
+    
+  - Optional serverpack update scheduler. Time of day and number of days between updates can be set in the properties file. Default settings are everyday at midnight (local time). Clients will need to re-login to receive the updated map.
 
 - **Release Notes:**
   - Release 1.0 - Initial release.
   - Release 1.1 - Excluded disbanded deeds
+  - Release 1.2 - Added serverpack update scheduler
