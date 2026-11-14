@@ -156,22 +156,15 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 				if ((isStartTown && allowStartTowns) || (!isStartTown && allowDeeds)) {
 					outtext.append("<");
 					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
-					outtext.append(">");
-					outtext.append("<name>");
+					outtext.append("><name>");
 					outtext.append(name);
-					outtext.append("</name>");
-					outtext.append("<xpos>");
+					outtext.append("</name><xpos>");
 					outtext.append(xpos);
-					outtext.append("</xpos>");
-					outtext.append("<ypos>");
+					outtext.append("</xpos><ypos>");
 					outtext.append(ypos);
-					outtext.append("</ypos>");
-					if (isStartTown) {
-						outtext.append("<type>1</type>");
-					} else {
-						outtext.append("<type>0</type>");
-					}
-					outtext.append("</");
+					outtext.append("</ypos><type>");
+					outtext.append(isStartTown ? "1" : "0");
+					outtext.append("</type></");
 					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
 					outtext.append(">");
 				}
@@ -193,18 +186,13 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 					int ypos = Math.round(rs.getFloat("POSY") / 4.0F);
 					outtext.append("<");
 					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
-					outtext.append(">");
-					outtext.append("<name>");
+					outtext.append("><name>");
 					outtext.append(name);
-					outtext.append("</name>");
-					outtext.append("<xpos>");
+					outtext.append("</name><xpos>");
 					outtext.append(xpos);
-					outtext.append("</xpos>");
-					outtext.append("<ypos>");
+					outtext.append("</xpos><ypos>");
 					outtext.append(ypos);
-					outtext.append("</ypos>");
-					outtext.append("<type>2</type>");
-					outtext.append("</");
+					outtext.append("</ypos><type>2</type></");
 					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
 					outtext.append(">");
 				}
