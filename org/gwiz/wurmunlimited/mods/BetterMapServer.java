@@ -140,7 +140,7 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 	}
 
 	private String createXmlFileText() {
-		String outtext = "<markers>";
+		StringBuilder outtext = new StringBuilder("<markers>");
 		try {
 			Connection dbcon = null;
 			PreparedStatement ps = null;
@@ -154,16 +154,26 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 				int ypos = ((rs.getInt("STARTY") + rs.getInt("ENDY")) / 2);
 				boolean isStartTown = rs.getBoolean("PERMANENT");
 				if ((isStartTown && allowStartTowns) || (!isStartTown && allowDeeds)) {
-					outtext = outtext + "<" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
-					outtext = outtext + "<name>" + name + "</name>";
-					outtext = outtext + "<xpos>" + xpos + "</xpos>";
-					outtext = outtext + "<ypos>" + ypos + "</ypos>";
+					outtext.append("<");
+					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
+					outtext.append(">");
+					outtext.append("<name>");
+					outtext.append(name);
+					outtext.append("</name>");
+					outtext.append("<xpos>");
+					outtext.append(xpos);
+					outtext.append("</xpos>");
+					outtext.append("<ypos>");
+					outtext.append(ypos);
+					outtext.append("</ypos>");
 					if (isStartTown) {
-						outtext = outtext + "<type>1</type>";
+						outtext.append("<type>1</type>");
 					} else {
-						outtext = outtext + "<type>0</type>";
+						outtext.append("<type>0</type>");
 					}
-					outtext = outtext + "</" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
+					outtext.append("</");
+					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
+					outtext.append(">");
 				}
 			}
 		} catch (SQLException e) {
@@ -181,23 +191,33 @@ public class BetterMapServer implements WurmServerMod, ServerStartedListener, Co
 					String name = rs.getString("DESCRIPTION");
 					int xpos = Math.round(rs.getFloat("POSX") / 4.0F);
 					int ypos = Math.round(rs.getFloat("POSY") / 4.0F);
-					outtext = outtext + "<" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
-					outtext = outtext + "<name>" + name + "</name>";
-					outtext = outtext + "<xpos>" + xpos + "</xpos>";
-					outtext = outtext + "<ypos>" + ypos + "</ypos>";
-					outtext = outtext + "<type>2</type>";
-					outtext = outtext + "</" + name.toLowerCase(Locale.ROOT).replace(" ", "_") + ">";
+					outtext.append("<");
+					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
+					outtext.append(">");
+					outtext.append("<name>");
+					outtext.append(name);
+					outtext.append("</name>");
+					outtext.append("<xpos>");
+					outtext.append(xpos);
+					outtext.append("</xpos>");
+					outtext.append("<ypos>");
+					outtext.append(ypos);
+					outtext.append("</ypos>");
+					outtext.append("<type>2</type>");
+					outtext.append("</");
+					outtext.append(name.toLowerCase(Locale.ROOT).replace(" ", "_"));
+					outtext.append(">");
 				}
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		outtext = outtext + "</markers>";
-		return outtext;
+		outtext.append("</markers>");
+		return outtext.toString();
 	}
 
 	private BufferedImage renderMapImage(final MeshIO mesh) {
-		int size = mesh.getSize();
+		final int size = mesh.getSize();
 		BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
 		int[] pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 		for (int x = 0; x < size - 1; x++) {
